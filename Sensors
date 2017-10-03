@@ -1,0 +1,135 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using MySql.Data;
+using MySql.Data.MySqlClient;
+
+namespace MarsLanderSensorsWK6
+{
+    public class Sensors
+    {
+        public double accelX;
+        public double accelY;
+        public double accelZ;
+        public Boolean parachuteCheck;
+        public double altimeterValue;
+        public double temperatureValue;
+        public char dopplerRadar;
+        public char gyroscopeStatus;
+        public Boolean contactCheck;
+
+        public static void gatherData()
+        {
+            DBConnection.DBConnect();
+            DBConnection.OpenConnection();
+            if (DBConnection.OpenConnection())
+            {
+                string query = "SELECT * FROM testValues";
+                var command = new MySqlCommand(query, DBConnection.connection);
+                var reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    double accelX = Convert.ToDouble(reader.GetString(0));
+                    double accelY = Convert.ToDouble(reader.GetString(1));
+                    double accelZ = Convert.ToDouble(reader.GetString(2));
+                    Boolean parachuteCheck = Convert.ToBoolean(reader.GetString(3));
+                    double altimeterValue = Convert.ToDouble(reader.GetString(4));
+                    double temperatureValue = Convert.ToDouble(reader.GetString(5));
+                    char dopplerRadar = Convert.ToChar(reader.GetString(6));
+                    char gyroscopeStatus = Convert.ToChar(reader.GetString(7));
+                    Boolean contactCheck = Convert.ToBoolean(reader.GetString(8));
+                }
+            }
+
+            DBConnection.CloseConnection();
+        }
+
+        public static void sendData()
+        { 
+            //Code to send data to another object/program would go here
+        }
+
+        static void Main(string[] args)
+        {
+           Sensors.gatherData();
+           Sensors.sendData();
+
+          Console.WriteLine("Test1 Works!");
+           Console.ReadKey();
+        }
+    }
+
+    public class DBConnection
+    {
+        //establish variables
+        public static MySqlConnection connection;
+        private static string server;
+        private static string database;
+        private static string uid;
+        private static string password;
+
+        public static void DBConnect()
+        {
+            initializeConnection();
+        }
+
+        private static void initializeConnection()
+        {
+            //set values and establish connection
+            server = "http://smiller152.mydevryportfolio.com/";
+            database = "smiller3_marsLanderTest";
+            uid = "smiller3_shaneM";
+            password = "Leona133700";
+
+            string connectionString;
+            connectionString = "SERVER=" + server + ";" + "DATABASE=" + database + ";"
+               + "UID=" + uid + ";" + "PASSWORD=" + password + ";";
+
+            connection = new MySqlConnection(connectionString);
+
+            Console.WriteLine("Connection Status OK!");
+        }
+
+        public static bool OpenConnection()
+        {
+            try
+            {
+                connection.Open();
+                Console.WriteLine("Connection Opened!");
+                return true;
+            }
+            catch (MySqlException ex)
+            {
+                switch (ex.Number)
+                {
+                    case 0:
+                        Console.WriteLine("Cannont Connect to server");
+                        break;
+                    case 1045:
+                        Console.WriteLine("Invalid Username or Password");
+                        break;
+                }
+                return false;
+            }
+        }
+    
+
+        public static bool CloseConnection()
+        {
+            try
+            {
+                connection.Close();
+                Console.WriteLine("Connection Closed!");
+                return true;
+            }
+            catch (MySqlException ex)
+            {
+                Console.WriteLine(ex.Message);
+                return false;
+            }
+        }
+    }
+
+}
