@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MarsOS
 {
-    class Program
+    class MarsOS
     {/* Team: E
         Program: Mars OS
         Programmer: Ryan Barbera
@@ -15,22 +15,25 @@ namespace MarsOS
         Description: Handles control of lander and sends sensor data to database upon safe landing
         */
 
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
-            int numEngineWarmUpAltitude, numEngineCutOffAltitude;
+            Console.WriteLine("Welcome");
+            Console.ReadLine();
+            int numEngineWarmUpAltitude=1000, numEngineCutOffAltitude=250, numAxialEngineThrust=0;
             bool flightContour;
             bool parachute, touchdown = false;
-            int numAltimeter = 0;
+            int numAltimeter = 0 ;
             bool rollEngines, axialEngines, axialEnginesHot;
             bool accelerationDescent;//predetermined descent acceleration
-
+          
             bool phase1 = true, phase2 = false, phase3 = false, phase4 = false, phase5 = false;
 
             while (phase1 = true)
             {
                 trajectory();
-                if (numAltimeter <= numEngineWarmUpAltitude)
+                if ( numAltimeter <= numEngineWarmUpAltitude)
                 {
+                    Console.WriteLine("Success!");
                     phase1 = false;
                     phase2 = true;
                     engines();
@@ -47,7 +50,7 @@ namespace MarsOS
                     parachute = false;
                     phase2 = false;
                     phase3 = true;
-                    int numAxialEngineThrust = 100;
+                    numAxialEngineThrust = 100;
                 }
                 else
                 {
@@ -112,11 +115,18 @@ namespace MarsOS
                 {
                     Console.WriteLine("Can not open connection ! ");
                 }
+                
+                
             }
-
+            TerminateApplication();
 
         }
+        public static void TerminateApplication()
+        {
            
+            Console.Write("Thank you.  Press any key to terminate the program...");
+            Console.ReadLine();
+        }
 
         static void engines()
         {
@@ -124,7 +134,10 @@ namespace MarsOS
             bool rollEnginesOn = true;
         }
 
+        public static void alt (Sensors altimeter)
+        {
 
+        }
        
         static void trajectory()
         {
