@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.OleDb;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
@@ -14,130 +15,172 @@ namespace MarsOS
         Last Update:10/8/2017
         Description: Handles control of lander and sends sensor data to database upon safe landing
         */
-
+        
         public static void Main(string[] args)
         {
+            
+            Sensors sense = new Sensors();
+            sense.sendData();
+            int altimeter = sense.altimeter;
+            double accelerometer = sense.accelerometer;
+            double gyroscope = sense.gyroscope;
+            bool touchdown = sense.touchdown;
+            int temperature = sense.temperature;
+            //test data
+            
+            altimeter = 2000;
+            
+
             Console.WriteLine("Welcome");
             Console.ReadLine();
-            int numEngineWarmUpAltitude=1000, numEngineCutOffAltitude=250, numAxialEngineThrust=0;
-            bool flightContour;
-            bool parachute, touchdown = false;
-            int numAltimeter = 0 ;
-            bool rollEngines, axialEngines, axialEnginesHot;
+            int numEngineWarmUpAltitude=1600, numEngineCutOffAltitude=350, numAxialEngineThrust=0;
+            bool flightContour = true;
+            bool parachute;
+            
+            bool rollEngines, axialEngines, axialEnginesHot=false;
             bool accelerationDescent;//predetermined descent acceleration
-          
+
             bool phase1 = true, phase2 = false, phase3 = false, phase4 = false, phase5 = false;
-
-            while (phase1 = true)
-            {
-                trajectory();
-                if ( numAltimeter <= numEngineWarmUpAltitude)
-                {
-                    Console.WriteLine("Success!");
-                    phase1 = false;
-                    phase2 = true;
-                    engines();
-                }
-                else phase1 = true;
-            }
-            while (phase2 = true)
-            {
-                trajectory();
-                int numRollEngineThrust = 100;
-
-                if (axialEnginesHot = true)
-                {
-                    parachute = false;
-                    phase2 = false;
-                    phase3 = true;
-                    numAxialEngineThrust = 100;
-                }
-                else
-                {
-                    phase2 = true;
-                }
-            }
-            while (phase3 = true)
-            {
-                if (flightContour = true)
-                {
-                    numAxialEngineThrust = 50;
-                }
-                else
-                {
-                    numAxialEngineThrust = 100;
-
-                }
-                if (numAltimeter <= numEngineCutOffAltitude)
-                {
-                    axialEngines = false;
-                    rollEngines = false;
-                    phase3 = false;
-                    phase4 = true;
-                }
-                if (touchdown = true)
-                {
-                    axialEngines = false;
-                    rollEngines = false;
-                    phase3 = false;
-                    phase5 = true;
-                }
-                else
-                {
-                    phase3 = true;
-                }
-            }
-            while (phase4 = true)
-            {
-                bool freeFall = true;
-                if (touchdown = true)
-                {
-                    phase5 = true;
-                }
-                else
-                    phase4 = true;
-            }
-            while (phase5 = true)
-            {
-                string connetionString = null;
-                SqlConnection cnn;
-                connetionString = "Data Source=rbarbera.mydevryportfolio.com;Initial Catalog=rbarbera_cis470;User ID=rbarbera_cis470;Password=cis470";
-                cnn = new SqlConnection(connetionString);
-                try
-                {
-                    cnn.Open();
-                    Console.WriteLine("Connection Open ! ");
-                    //Will send all sensor data to database
-                    cnn.Close();
-
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Can not open connection ! ");
-                }
+           
+            
                 
+
+                while (phase1 == true)
+                {
+                    trajectory();
+                    if (altimeter <= numEngineWarmUpAltitude)
+                    {
+
+                        phase1 = false;
+                        phase2 = true;
+                        engines();
+                        Console.WriteLine("phase 1 complete" + Convert.ToString(altimeter));
+                    sense.sendData();
+
+                }
+                    else phase1 = true;
+                altimeter = altimeter - 50;
                 
+            }
+                while (phase2 == true)
+                {
+                    trajectory();
+                    int numRollEngineThrust = 100;
+                axialEnginesHot = true;
+
+                if (axialEnginesHot == true)
+                    {
+                        parachute = false;
+                        phase2 = false;
+                        phase3 = true;
+                        numAxialEngineThrust = 100;
+                        Console.WriteLine("phase 2 complete" + Convert.ToString(altimeter));
+                    sense.sendData();
+
+
+                }
+                    else
+                    {
+                        phase2 = true;
+                    
+                }
+                }
+                while (phase3 == true)
+                {
+                    
+                    if (flightContour == true)
+                    {
+                        numAxialEngineThrust = 50;
+                    }
+                    else
+                    {
+                        numAxialEngineThrust = 100;
+
+                    }
+                    if (altimeter <= numEngineCutOffAltitude)
+                    {
+                        axialEngines = false;
+                        rollEngines = false;
+                        phase3 = false;
+                        phase4 = true;
+                        Console.WriteLine("phase 3 complete" + Convert.ToString(altimeter));
+                    sense.sendData();
+                }
+                    else
+                    {
+                        phase3 = true;
+                    altimeter = altimeter - 50;
+
+                }
+                    if (touchdown == true)
+                    {
+                        axialEngines = false;
+                        rollEngines = false;
+                        phase3 = false;
+                        phase5 = true;
+                        Console.WriteLine("touchdown complete" + Convert.ToString(altimeter));
+                    sense.sendData();
+                }
+                    
+                }
+                while (phase4 == true)
+                {
+                if (altimeter == 0)
+                {
+                    touchdown = true;
+                }
+                    bool freeFall = true;
+                    if (touchdown == true)
+                    {
+                        phase5 = true;
+                        phase4 = false;
+                        Console.WriteLine("phase 4 complete" + Convert.ToString(altimeter));
+                    sense.sendData();
+                }
+                else
+                {
+                    phase4 = true;
+                    altimeter = altimeter - 50;
+
+                }
+                        
+                }
+                while (phase5 == true)
+                {
+                    Console.WriteLine("phase 5 complete" + Convert.ToString(altimeter));
+
+                    sense.sendData();
+                phase5 = false;
+
+              
             }
             TerminateApplication();
 
-        }
+            }
         public static void TerminateApplication()
         {
            
-            Console.Write("Thank you.  Press any key to terminate the program...");
+            Console.WriteLine("Thank you.  Press any key to terminate the program...");
             Console.ReadLine();
         }
 
         static void engines()
         {
-            bool axialEnginesWarmUp = true;
-            bool rollEnginesOn = true;
+            int i = 0;
+            while (i < 101)
+            {
+                i=i + 5;
+            }
+            if (i == 100)
+            {
+                bool axialEnginesWarmUp = true;
+                bool rollEnginesOn = true;
+
+            }
+           
         }
 
-        public static void alt (Sensors altimeter)
-        {
-
-        }
+        
        
         static void trajectory()
         {
